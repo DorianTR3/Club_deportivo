@@ -1,0 +1,83 @@
+Epica 1. Administracion de socios/Registros y gestión de membresias
+RESUMEN: Registro, edición y gestión del ciclo de vida de los socios (tipos: accionista, rentista, vínculo familiar hasta 6 integrantes).
+DESCRIPCIÓN: Formulario modal de alta/edición con validaciones (CURP único, límites familiares), estados (Activo, Suspendido, Baja), historial y vínculo familiar. 
+Incluir control de datos personales, contactos de emergencia y trazabilidad de cambios. Debe exponer API para búsquedas (por nombre, número de socio) y guardado 
+seguro en BD. Considerar importación inicial desde CSV de muestra y reglas de negocio (límite 6, tipos de socio). Puntos clave: validaciones en frontend y backend, 
+tests de integridad, endpoints paginados y filtros. 
+
+Epica 2. Autenticacion y control de acceso
+RESUMEN: Login seguro y control de permisos por rol (socios, instructores, recepción, coordinador, administrador).
+DESCRIPCIÓN: Implementar autenticación (correo + contraseña), gestión de sesiones seguras (HTTPS), recuperación/gestión de credenciales de prueba para desarrollo,
+y un sistema RBAC que permita asignar permisos y límites (p. ej. autorización de acceso para socios sancionados). Endpoints protegidos, middleware de autorización, 
+y UI para gestionar roles. Auditoría mínima de accesos. 
+
+Epica 3. Gestión de Visitas y Recepción.
+RESUMEN: Emisión y control de pases de un día, registro de entradas/salidas de visitantes y recepción asistida.
+DESCRIPCIÓN: Flujo para crear pases temporales (vigencia 24h), registrar entrada/Salida, dashboards de recepción con contadores de visitas activas, y posibilidad de
+ crear reservas asistidas en nombre de visitantes. Debe integrarse con control de capacidad y liberar plazas al salir. Incluir validaciones para pases vencidos y 
+ registro de trazabilidad. 
+
+Epica 4. Reservas y Control de Espacios.
+RESUMEN: Gestión en tiempo real de disponibilidad y reservas para canchas, alberca, gimnasio y áreas.
+DESCRIPCIÓN: Módulo con timeline/rejilla (12 canchas) para ver ocupación por hora, crear/editar/cancelar reservas (reserva asistida por recepción), bloqueo por 
+mantenimiento preventivo, reglas de traslape y generación de código de reserva único. API de consulta por rango horario, validaciones contra mantenimiento y capacidad. 
+Considerar locking para prevenir race conditions (reservas simultáneas). 
+
+Epica 5. Programación de Disciplinas e Instructores.
+RESUMEN: Crear calendarios de clases, vincular instructores a espacios y horarios, y gestionar programación de disciplinas.
+DESCRIPCIÓN: CRUD para disciplinas (Yoga, Pilates, Natación, etc.), asignación de instructor y espacio por sesión, generación de calendario, y opción para instructores 
+de marcar asistencia en clase. Integrar validaciones de capacidad y permitir la validación de visitantes en clase. Incluir módulo para métricas de instructor 
+(asistencia mensual, convocatoria). 
+
+Epica 6. Registro de Asistencia Digital y Reservaciones en Tiempo Real.
+RESUMEN: Captura digital de asistencia a sesiones y gestión de convocatorias.
+DESCRIPCIÓN: Interfaz para que instructores y recepción marquen asistencia en tiempo real (sustituye bitácoras manuales), registro de entradas/salidas, y actualización 
+de estadísticas que alimentan dashboards. Diseñar eventos y logs para auditar asistencia y generar datos para KPIs. Integrar con módulo de sanciones/no-shows. 
+
+Epica 7. Operación de Ludoteca.
+RESUMEN: Control de ingreso/salida y tiempo de permanencia para infantes (3–6 años).
+DESCRIPCIÓN: Formulario de registro de infantes, validación de edad, límite máximo de estancia (2 horas), registro de responsable y notificaciones ante vencimiento del 
+tiempo. Controles para seguridad y visualización en dashboards. Reglas para bloqueo si tiempo excedido.
+
+Epica 8. Dashboard Ejecutivo y Reportes (KPIs).
+RESUMEN: Paneles para Gerencia con KPIs: ocupación, reservas del día, sanciones, composición de socios.
+DESCRIPCIÓN: Dashboards con indicadores en tiempo real (volumen de comunidad, ocupación por hora, reservas, sanciones activas), gráficas de ocupación, y exportación de 
+datos para BI. Soportar filtros por fecha/espacio/tipo de socio y alertas (picos de uso). Exponer endpoints para herramientas externas de BI. 
+
+Epica 9. Gestión de Sanciones y Comportamiento.
+RESUMEN: Registro y aplicación de sanciones por no-shows u otras faltas, con bloqueos automáticos.
+DESCRIPCIÓN: Reglas de negocio para detectar no-shows, umbrales que disparan sanciones, interfaz para revisar sanciones y autorizar accesos (entrenador/administrador), 
+y mecanismo de apelación/registro. Implementar notificaciones y actualizar estado de socio automáticamente en caso de sanción
+
+Epica 10. Gestión de Membresía y Pagos (Renovaciones).
+RESUMEN: Control de estado de membresía, alertas de vencimiento y renovación/activación de membresías.
+DESCRIPCIÓN: Validación de membresía vigente en acceso, notificaciones de vencimiento, flujo de renovación (activación de pago/actualización de estatus), y opcional 
+integración con pasarela de pagos. Debe incluir historial de pagos y reglas para acceso temporal si procede. 
+
+Epica 11. Formularios, Vistas UI y Prototipos (Figma).
+RESUMEN: Implementación de vistas (login, dashboard socio, formularios de registro y reservas) basadas en prototipos Figma y diagramas.
+DESCRIPCIÓN: Reproducir vistas clave: inicio de sesión, panel socio, formulario alta socio, formulario nueva reserva, dashboards de recepción y ejecutivos. Priorizar 
+experiencia funcional (todo debe funcionar antes del refinamiento visual). Enlazar con los recursos de diseño (Figma, Lucid) y preparar componentes reutilizables. 
+
+Epica 12. Seguridad de Datos y Cumplimiento (LFPDPPP).
+RESUMEN: Protección de datos personales y cumplimiento legal (LFPDPPP), cifrado y buenas prácticas.
+DESCRIPCIÓN: Implementar almacenamiento seguro de datos personales, políticas de privacidad, cifrado en tránsito (HTTPS) y en reposo donde aplique, control de acceso,
+registros de consentimiento, y mecanismos para solicitudes de derechos ARCO si aplica. Documentar medidas de cumplimiento y pruebas de seguridad básicas. 
+
+Epica 13. Gestión de Usuarios Internos del Sistema
+Descripción:
+Esta épica contempla el registro, edición y administración de los usuarios que operan el sistema internamente, tales como administradores, coordinadores, recepcionistas, 
+instructores y otros empleados del club.
+Dentro de esta funcionalidad se desarrollará el módulo que permitirá:
+•	Registrar nuevos empleados dentro del sistema.
+•	Asignar roles de acceso (administrador, coordinador, recepción, instructor, etc.).
+•	Editar o actualizar la información de los usuarios internos.
+•	Activar o desactivar cuentas de empleados.
+•	Definir los permisos que cada rol tendrá dentro del sistema (control de accesos a módulos).
+•	Gestionar credenciales de acceso para iniciar sesión.
+Este módulo es fundamental para garantizar una correcta administración del sistema y asegurar que cada tipo de usuario tenga acceso únicamente a las funciones que le 
+corresponden.
+
+
+
+
