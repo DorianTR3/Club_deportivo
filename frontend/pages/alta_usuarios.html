@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta de Usuarios Internos</title>
+    <link rel="stylesheet" href="/frontend/css/alta_usuarios.css">
+</head>
+<body>
+
+    <div class="modal-contenedor">
+        <div class="modal-cabecera">
+            <h2>Registrar Nuevo Usuario Interno</h2>
+            <p>Complete los datos para registrar un nuevo empleado del club.</p>
+            <button class="btn-cerrar">&times;</button>
+        </div>
+
+        <form action="/api/usuarios" method="POST">
+            
+            <div class="seccion-formulario">
+                <h3>Información Personal</h3>
+                
+                <div class="fila-grid">
+                    <div class="grupo-input">
+                        <label for="nombreCompleto">Nombre Completo *</label>
+                        <input type="text" id="nombreCompleto" name="nombreCompleto" placeholder="Nombre completo" required>
+                    </div>
+                    <div class="grupo-input">
+                        <label for="curp">CURP *</label>
+                        <input type="text" id="curp" name="curp" placeholder="18 caracteres" maxlength="18" required>
+                    </div>
+                </div>
+
+                <div class="fila-grid">
+                    <div class="grupo-input">
+                        <label for="correo">Correo Electrónico *</label>
+                        <input type="email" id="correo" name="correo" placeholder="correo@ejemplo.com" required>
+                    </div>
+                    <div class="grupo-input">
+                        <label for="telefono">Teléfono *</label>
+                        <input type="tel" id="telefono" name="telefono" placeholder="55-1234-5678" required>
+                    </div>
+                </div>
+
+                <div class="fila-grid">
+                    <div class="grupo-input">
+                        <label for="fechaNacimiento">Fecha de Nacimiento *</label>
+                        <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+                    </div>
+                    <div class="grupo-input">
+                        <label for="sexo">Sexo *</label>
+                        <select id="sexo" name="sexo" required>
+                            <option value="Hombre">Hombre</option>
+                            <option value="Mujer">Mujer</option>
+                            <option value="No especificar">No especificar</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grupo-input ancho-completo">
+                    <label for="direccion">Dirección *</label>
+                    <input type="text" id="direccion" name="direccion" placeholder="Calle, número, colonia, ciudad" required>
+                </div>
+            </div>
+
+            <div class="seccion-formulario">
+                <h3>Datos Laborales</h3>
+                
+                <div class="fila-grid">
+                    <div class="grupo-input">
+                        <label for="rol">Rol en la Empresa *</label>
+                        <select id="rol" name="rolDentroDeLaEmpresa" required>
+                            <option value="instructor">Instructor</option>
+                            <option value="Recepcionista">Recepcionista</option>
+                            <option value="coordinador">Coordinador</option>
+                            <option value="administrador">Administrador</option>
+                            <option value="otro">Otro tipo</option>
+                        </select>
+                    </div>
+                    <div class="grupo-input">
+                        <label for="fechaAlta">Fecha de Alta *</label>
+                        <input type="date" id="fechaAlta" name="fechaAlta" required>
+                    </div>
+                </div>
+
+                <div class="grupo-input ancho-completo">
+                    <label for="contrasena">Contraseña Temporal *</label>
+                    <input type="password" id="contrasena" name="contrasena" placeholder="Asigne una contraseña" required>
+                </div>
+            </div>
+
+            <div class="caja-info">
+                El estado del usuario se asignará como "Activo" automáticamente al confirmar el registro. Los campos marcados con (*) son obligatorios.
+            </div>
+
+            <div class="acciones-formulario">
+                <button type="button" class="btn-cancelar">Cancelar</button>
+                <button type="submit" class="btn-registrar">Registrar Usuario</button>
+            </div>
+
+        </form>
+    </div>
+
+</body>
+</html>
