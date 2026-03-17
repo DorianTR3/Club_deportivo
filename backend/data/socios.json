@@ -1,0 +1,14 @@
+[
+  {
+    "nombreCompleto": "Juan Pérez López",
+    "curp": "PEPJ800101HDFRRN09",
+    "tipoSocio": "accionista",
+    "modalidadFamiliar": true,
+    "fechaNacimiento": "1980-01-01",
+    "sexo": "Hombre",
+    "direccion": "Calle Falsa 123",
+    "telefono": "4431234567",
+    "correo": "juan@example.com",
+    "fechaAlta": "2026-03-16"
+  }
+]

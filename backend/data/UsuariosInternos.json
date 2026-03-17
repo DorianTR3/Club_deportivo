@@ -1,7 +1,7 @@
 [
   {
     "nombreCompleto": "Admin Principal",
-    "CURP": "ADMP990101HMCXXXXX",
+    "curp": "ADMP990101HMCXXXXX",
     "rolDentroDeLaEmpresa": "administrador",
     "fechaNacimiento": "0000-01-01",
     "sexo": "No especificar",

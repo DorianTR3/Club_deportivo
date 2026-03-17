@@ -2,9 +2,10 @@
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
+const {validarCURP} = require('../utils/validacionCurp');
 
 // aqi armo la ruta donde tengo guardado mi json pa q no se pierda
-const rutaJSON = path.join(__dirname, '../../data/UsuariosInternos.json');
+const rutaJSON = path.join(__dirname, '../../data/usuariosInternos.json');
 
 const procesarNuevoEmpleado = (req, res) => {
     const datosFormulario = req.body;
@@ -17,7 +18,7 @@ const procesarNuevoEmpleado = (req, res) => {
     ];
     
     camposRequeridos.forEach(campo => {
-        if (!datosFormulario[campo] || datosFormulario[campo].trim() === "") {
+        if (!datosFormulario[campo] || datosFormulario[campo].toString().trim() === "") {
             errores.push(`falta llenar el canpo: ${campo}`);
         }
     });
@@ -25,12 +26,13 @@ const procesarNuevoEmpleado = (req, res) => {
     if (errores.length > 0) return res.status(400).json({ exito: false, mensajes: errores });
 
     // valido q el curp se vea vien y tenga 18 caracteres justos
-    if (datosFormulario.curp.length !== 18) {
-        errores.push("el curp deve tener 18 caracteres exactos");
+    const resultadoCURP = validarCURP(datosFormulario.curp);
+    if (!resultadoCURP.valido) {
+        errores.push(resultadoCURP.mensaje);
     }
 
     // defino los roles q si existen en el club
-    const rolesValidos = ['instructor', 'Recepcionista', 'coordinador', 'administrador', 'otro'];
+    const rolesValidos = ['instructor', 'recepcionista', 'coordinador', 'administrador', 'otro'];
     if (!rolesValidos.includes(datosFormulario.rolDentroDeLaEmpresa)) {
         errores.push("ese rol no exsiste en la empresa");
     }
