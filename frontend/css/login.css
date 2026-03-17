@@ -9,13 +9,39 @@
 body {
     background-color: #f8fafd;
     display: flex;
+    flex-direction: column; /* Cambiado para permitir la navbar arriba */
     align-items: center;
-    justify-content: center;
     min-height: 100vh;
-    padding: 20px;
 }
 
-/* --- TARJETA PRINCIPAL --- */
+/* --- ESTILOS DE LA NAV BAR (NUEVO) --- */
+.main-navbar {
+    width: 100%;
+    background-color: #ffffff;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: auto; /* Empuja el login al centro */
+}
+
+.nav-logo {
+    color: #0f2a44;
+    text-decoration: none;
+    font-weight: 800;
+    font-size: 24px;
+    letter-spacing: -0.5px;
+}
+
+/* --- TARJETA PRINCIPAL (Ajustada) --- */
+.login-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    margin-bottom: auto; /* Mantiene el equilibrio con la navbar */
+}
+
 .login-card {
     background-color: #ffffff;
     width: 100%;

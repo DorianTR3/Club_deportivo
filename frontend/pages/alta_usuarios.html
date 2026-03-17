@@ -4,18 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alta de Usuarios Internos</title>
-    <link rel="stylesheet" href="/frontend/css/alta_usuarios.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../css/alta_usuarios.css">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
+
+    <header class="main-navbar">
+        <a href="../../.env/index.html" class="nav-logo">Club Deportivo</a>
+    </header>
 
     <div class="modal-contenedor">
         <div class="modal-cabecera">
             <h2>Registrar Nuevo Usuario Interno</h2>
             <p>Complete los datos para registrar un nuevo empleado del club.</p>
-            <button class="btn-cerrar">&times;</button>
+            <a href="../../.env/index.html" class="btn-cerrar" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">&times;</a>
         </div>
 
-        <form action="/api/usuarios" method="POST">
+        <form id="registro-form">
             
             <div class="seccion-formulario">
                 <h3>Información Personal</h3>
@@ -94,12 +103,31 @@
             </div>
 
             <div class="acciones-formulario">
-                <button type="button" class="btn-cancelar">Cancelar</button>
+                <button type="button" class="btn-cancelar" onclick="window.location.href='../../.env/index.html'">Cancelar</button>
                 <button type="submit" class="btn-registrar">Registrar Usuario</button>
             </div>
 
         </form>
     </div>
+
+    <script>
+        lucide.createIcons();
+
+        // CONEXIÓN A TU PÁGINA (MODIFICAR SOCIO)
+        document.getElementById('registro-form').addEventListener('submit', function(e) {
+            e.preventDefault(); // Evitamos el error de "archivo no encontrado"
+            
+            const nombre = document.getElementById('nombreCompleto').value;
+            
+            // Preguntamos al usuario si quiere ir a editar el perfil recién creado
+            if(confirm(`¡Usuario ${nombre} registrado!\n\n¿Deseas ir a la pantalla de edición para verificar los datos?`)) {
+                // AQUÍ ESTÁ LA CONEXIÓN: Nos manda a tu página
+                window.location.href = 'modificar_socio.html';
+            } else {
+                window.location.href = '../../.env/index.html';
+            }
+        });
+    </script>
 
 </body>
 </html>
