@@ -1,0 +1,41 @@
+# ===========================
+# SECRETOS - NUNCA SUBIR
+# ===========================
+.env
+.env.local
+.env.production
+
+# ===========================
+# DEPENDENCIAS
+# ===========================
+node_modules/
+backend/node_modules/
+
+# ===========================
+# LOGS
+# ===========================
+*.log
+npm-debug.log*
+nodemon-debug.log*
+
+# ===========================
+# SISTEMA OPERATIVO
+# ===========================
+.DS_Store          # Mac
+Thumbs.db          # Windows
+desktop.ini        # Windows
+
+# ===========================
+# EDITORES DE CODIGO
+# ===========================
+.vscode/
+.idea/
+*.suo
+*.swp
+
+# ===========================
+# BUILD / TEMPORALES
+# ===========================
+dist/
+build/
+tmp/

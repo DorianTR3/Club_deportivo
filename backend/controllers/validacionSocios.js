@@ -2,7 +2,7 @@
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
-const {validarCURP} = require('../utils/validacionCurp');
+const {validarCURP} = require('../src/utils/validacionCurp');
 // aqi armo la ruta donde tengo guardado mi json pa q no se pierda
 const rutaJSON = path.join(__dirname, '../../data/socios.json');
 
