@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alta de Socio | Club Social y Deportivo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../css/alta_socio.css">
+</head>
+<body>
+    <header class="main-navbar">
+        <div class="nav-container">
+            <a href="../../.env/index.html" class="nav-logo">Club Deportivo</a>
+            <a href="../../.env/index.html" class="btn-volver"><i data-lucide="arrow-left"></i> Volver al Inicio</a>
+        </div>
+    </header>
+
+    <main class="content-wrapper">
+        <div class="form-container">
+            <h2 style="color: #0f2a44; font-size: 28px;">Registro de Socio</h2>
+            <p style="color: #718096; margin-bottom: 30px;">Complete los campos para generar su membresía.</p>
+
+            <form id="form-alta-socio">
+                <div class="section-header">Identidad</div>
+                <div class="grid-layout">
+                    <input type="text" name="nombre" placeholder="Nombre(s) *" required>
+                    <input type="text" name="apellido" placeholder="Apellido(s) *" required>
+                    <input type="text" name="curp" maxlength="18" placeholder="CURP (18 caracteres) *" required>
+                    <input type="date" name="fecha_nacimiento" required>
+                    <select name="genero">
+                        <option value="Hombre">Hombre</option>
+                        <option value="Mujer">Mujer</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="section-header">Membresía y Contacto</div>
+                <div class="grid-layout">
+                    <select name="tipo_socio">
+                        <option value="accionista">Accionista</option>
+                        <option value="rentista">Rentista</option>
+                    </select>
+                    <select name="modalidad">
+                        <option value="individual">Individual</option>
+                        <option value="familiar">Familiar</option>
+                    </select>
+                    <input type="tel" name="telefono" placeholder="Teléfono">
+                    <input type="email" name="email_contacto" placeholder="Email de contacto">
+                    <textarea name="direccion" class="full-span" rows="2" placeholder="Dirección completa"></textarea>
+                </div>
+
+                <div class="section-header">Emergencia</div>
+                <div class="grid-layout">
+                    <input type="text" name="nombre_emergencia" placeholder="Nombre de contacto">
+                    <input type="tel" name="tel_emergencia" placeholder="Teléfono de contacto">
+                </div>
+
+                <div style="margin-top: 40px; display: flex; justify-content: flex-end; gap: 20px;">
+                    <button type="submit" class="btn-registrar">Registrar Socio</button>
+                </div>
+            </form>
+        </div>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>
