@@ -1,14 +1,18 @@
 CREATE TABLE IF NOT EXISTS roles (
-  id          SERIAL PRIMARY KEY,
-  nombre      VARCHAR(50) UNIQUE NOT NULL,
-  descripcion VARCHAR(150)
+  rol_id  SERIAL PRIMARY KEY,
+  nombre  VARCHAR(50) UNIQUE NOT NULL
 );
-
-INSERT INTO roles (nombre, descripcion) VALUES
-  ('admin',    'Acceso total al sistema'),
-  ('empleado', 'Gestión de actividades y socios'),
-  ('socio',    'Acceso a su perfil y actividades');
-
+ 
+-- Roles del sistema
+INSERT INTO roles (nombre) VALUES
+  ('gerente'),
+  ('admin'),
+  ('coordinador'),
+  ('instructor'),
+  ('recepcion'),
+  ('socio'),
+  ('otro')
+ON CONFLICT (nombre) DO NOTHING;
 CREATE TABLE IF NOT EXISTS usuarios (
   id            SERIAL PRIMARY KEY,
   nombre        VARCHAR(100) NOT NULL,
