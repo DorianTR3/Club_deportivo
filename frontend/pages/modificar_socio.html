@@ -15,7 +15,7 @@
 
     <header class="main-navbar">
         <div class="nav-container">
-            <a href="../../.env/index.html" class="nav-logo">Club Deportivo</a>
+            <a href="index.html" class="nav-logo">Club Deportivo</a>
             <div class="nav-user-info">
                 <span id="role-badge" class="badge-role">Cargando rol...</span>
                 <button id="btn-logout" class="logout-btn">
@@ -31,7 +31,7 @@
             <div class="modal-cabecera">
                 <h2>Modificar Datos del Socio</h2>
                 <p>Actualice la información del perfil. Los campos de membresía están protegidos para roles no administrativos.</p>
-                <a href="../../.env/index.html" class="btn-cerrar" style="text-decoration: none;">&times;</a>
+                <a href="index.html" class="btn-cerrar" style="text-decoration: none;">&times;</a>
             </div>
 
             <form id="form-modificar-socio">
@@ -93,7 +93,7 @@
                 </div>
 
                 <div class="acciones-formulario">
-                    <button type="button" class="btn-cancelar" onclick="window.location.href='../../.env/index.html'">Descartar</button>
+                    <button type="button" class="btn-cancelar" onclick="window.location.href='index.html'">Descartar</button>
                     <button type="submit" class="btn-registrar">Guardar Cambios</button>
                 </div>
 
@@ -102,54 +102,40 @@
     </main>
 
     <script>
-        // 1. Inicializar iconos de Lucide
         lucide.createIcons();
 
-        // 2. Lógica de Logout (SCRUM-44)
+        // Corregido: Redirección de Logout al index local
         document.getElementById('btn-logout').addEventListener('click', () => {
             if(confirm('¿Desea cerrar su sesión de edición?')) {
-                window.location.href = '../../.env/index.html';
+                window.location.href = 'index.html';
             }
         });
 
-        /* --- 3. LÓGICA DE CONTROL DE ROLES (SCRUM-49) --- */
-        
-        /** * Simulación de roles para la tarea de Jira:
-         * Prueba cambiando este valor a: 'administrador', 'socio' o 'recepcionista'
-         */
         const currentRole = 'recepcionista'; 
-
         const badge = document.getElementById('role-badge');
         const infoText = document.getElementById('info-role-text');
         const camposCriticos = document.querySelectorAll('.campo-critico');
 
-        // Actualizar interfaz según el rol
         badge.textContent = `Rol: ${currentRole.charAt(0).toUpperCase() + currentRole.slice(1)}`;
         infoText.textContent = currentRole;
 
-        // VERIFICACIÓN DE PERMISOS
         if (currentRole === 'administrador') {
-            // EL ADMINISTRADOR: puede modificar todo
             badge.style.backgroundColor = '#e0f2fe';
             badge.style.color = '#0369a1';
-            console.log("Acceso total concedido al Administrador.");
         } else {
-            // EL SOCIO Y RECEPCIONISTA: no pueden modificar datos críticos
             camposCriticos.forEach(campo => {
-                campo.disabled = true; // Bloquea la edición física
-                campo.classList.add('input-locked'); // Aplica el estilo visual (punteado/gris)
+                campo.disabled = true;
+                campo.classList.add('input-locked');
             });
-            
             badge.style.backgroundColor = '#edf2f7';
             badge.style.color = '#718096';
-            console.log(`Acceso restringido para el rol: ${currentRole}`);
         }
 
-        // 4. Simulación de guardado
+        // Corregido: Redirección después de guardar
         document.getElementById('form-modificar-socio').addEventListener('submit', (e) => {
             e.preventDefault();
-            alert("¡Cambios guardados exitosamente!\nLos datos han sido actualizados respetando los permisos de tu rol.");
-            window.location.href = '../../.env/index.html';
+            alert("¡Cambios guardados exitosamente!");
+            window.location.href = 'index.html';
         });
     </script>
 
