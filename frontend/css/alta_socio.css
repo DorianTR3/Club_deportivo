@@ -18,6 +18,20 @@ body { background-color: #f8fafd; min-height: 100vh; color: #1a202c; }
 }
 .btn-volver:hover { color: #0f2a44; }
 
+/* ALERTA */
+.banner-exito {
+    display: none;
+    background-color: #d1fae5;
+    color: #065f46;
+    padding: 16px;
+    border-radius: 6px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid #a7f3d0;
+}
+
 /* --- FORMULARIO --- */
 .content-wrapper { padding: 40px 20px; }
 .form-container { 

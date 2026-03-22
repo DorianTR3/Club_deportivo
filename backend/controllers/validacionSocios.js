@@ -1,24 +1,24 @@
-// aqi jalo las librerias q ocupo pa encriptar y leer el arhcivo
-const bcrypt = require('bcryptjs');
-const fs = require('fs');
-const path = require('path');
-const {validarCURP} = require('../src/utils/validacionCurp');
-// aqi armo la ruta donde tengo guardado mi json pa q no se pierda
-const rutaJSON = path.join(__dirname, '../../data/socios.json');
-
-// VALIDACIÓN COMPLETA DE SOCIO
+// Importación exclusiva de la utilidad necesaria para este módulo
+const { validarCURP } = require('../utils/validacionCurp');
+/**
+ * Valida la integridad de los datos recibidos para un nuevo socio.
+ * Retorna un objeto con el estado de la validación y un arreglo de errores si los hay.
+ */
 function validarSocio(data) {
     const errores = [];
 
+    // Validación de presencia de datos básicos
     if (!data.nombreCompleto || data.nombreCompleto.trim() === "") {
         errores.push("El nombre completo es obligatorio.");
     }
 
+    // Validación estructural de la CURP mediante la utilidad externa
     const curpVal = validarCURP(data.curp);
     if (!curpVal.valido) {
         errores.push(curpVal.mensaje);
     }
 
+    // Verificación contra los tipos de membresía permitidos en el sistema
     const tiposValidos = ["accionista", "rentista"];
     if (!tiposValidos.includes(data.tipoSocio)) {
         errores.push("Tipo de socio inválido.");
@@ -32,12 +32,7 @@ function validarSocio(data) {
         errores.push("La fecha de nacimiento es obligatoria.");
     }
 
-    const resultadoCURP = validarCURP(datosFormulario.curp);
-    if (!resultadoCURP.valido) {
-        errores.push(resultadoCURP.mensaje);
-    }
-
-    const sexosValidos = ["Hombre", "Mujer", "No especificar"];
+    const sexosValidos = ["Hombre", "Mujer", "Otro", "No especificar"];
     if (!sexosValidos.includes(data.sexo)) {
         errores.push("Sexo inválido.");
     }
@@ -46,18 +41,16 @@ function validarSocio(data) {
         errores.push("La dirección es obligatoria.");
     }
 
+    // Validación de formato telefónico (exactamente 10 dígitos numéricos)
     const telefonoRegex = /^[0-9]{10}$/;
     if (!telefonoRegex.test(data.telefono)) {
-        errores.push("El teléfono debe tener 10 dígitos.");
+        errores.push("El teléfono debe tener 10 dígitos numéricos.");
     }
 
+    // Validación de formato estándar para correo electrónico
     const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!correoRegex.test(data.correo)) {
-        errores.push("Correo electrónico inválido.");
-    }
-
-    if (!data.fechaAlta) {
-        errores.push("La fecha de alta es obligatoria.");
+        errores.push("El formato del correo electrónico es inválido.");
     }
 
     return {
@@ -66,7 +59,4 @@ function validarSocio(data) {
     };
 }
 
-module.exports = {
-    validarCURP,
-    validarSocio
-};
+module.exports = { validarSocio };

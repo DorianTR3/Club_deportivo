@@ -11,8 +11,8 @@
 <body>
     <header class="main-navbar">
         <div class="nav-container">
-            <a href="../../.env/index.html" class="nav-logo">Club Deportivo</a>
-            <a href="../../.env/index.html" class="btn-volver"><i data-lucide="arrow-left"></i> Volver al Inicio</a>
+            <a href="index.html" class="nav-logo">Club Deportivo</a>
+            <a href="index.html" class="btn-volver"><i data-lucide="arrow-left"></i> Volver al Inicio</a>
         </div>
     </header>
 
@@ -20,7 +20,7 @@
         <div class="form-container">
             <h2 style="color: #0f2a44; font-size: 28px;">Registro de Socio</h2>
             <p style="color: #718096; margin-bottom: 30px;">Complete los campos para generar su membresía.</p>
-
+            <div id="alerta-exito" class="banner-exito"></div> <!-- Banner de alerta oculto inicialmente -->
             <form id="form-alta-socio">
                 <div class="section-header">Identidad</div>
                 <div class="grid-layout">
@@ -63,5 +63,6 @@
         </div>
     </main>
     <script>lucide.createIcons();</script>
+    <script src="../js/alta_socio.js"></script>
 </body>
 </html>
