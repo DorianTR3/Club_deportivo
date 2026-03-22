@@ -3,131 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alta de Usuarios Internos</title>
+    <title>Alta de Usuarios Internos | Club Deportivo</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     
     <link rel="stylesheet" href="../css/alta_usuarios.css">
-    
-    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
     <header class="main-navbar">
-        <a href="../../.env/index.html" class="nav-logo">Club Deportivo</a>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo" style="text-decoration: none; color: #0f2a44; font-weight: 800; font-size: 24px;">Club Deportivo</a>
+        </div>
     </header>
 
-    <div class="modal-contenedor">
-        <div class="modal-cabecera">
-            <h2>Registrar Nuevo Usuario Interno</h2>
-            <p>Complete los datos para registrar un nuevo empleado del club.</p>
-            <a href="../../.env/index.html" class="btn-cerrar" style="text-decoration: none; display: flex; align-items: center; justify-content: center;">&times;</a>
+    <main class="content-wrapper" style="padding: 40px 20px;">
+        <div class="modal-contenedor" style="background: white; padding: 40px; border-radius: 35px; box-shadow: 0 15px 40px rgba(0,0,0,0.05); max-width: 850px; margin: 0 auto;">
+            <div class="modal-cabecera" style="margin-bottom: 30px; position: relative;">
+                <h2 style="color: #0f2a44; font-size: 28px;">Registrar Nuevo Usuario Interno</h2>
+                <p style="color: #718096;">Complete los datos para registrar un nuevo empleado del club.</p>
+                <a href="index.html" class="btn-cerrar" style="position: absolute; top: 0; right: 0; text-decoration: none; font-size: 30px; color: #cbd5e0;">&times;</a>
+            </div>
+
+            <form id="registro-form">
+                
+                <div class="seccion-formulario" style="margin-bottom: 30px;">
+                    <h3 style="color: #00b4ff; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">Información Personal</h3>
+                    
+                    <div class="fila-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div class="grupo-input">
+                            <label style="display: block; font-weight: 700; margin-bottom: 8px;">Nombre Completo *</label>
+                            <input type="text" id="nombreCompleto" placeholder="Nombre completo" style="width: 100%; padding: 12px; border: 1.5px solid #edf2f7; border-radius: 12px;" required>
+                        </div>
+                        <div class="grupo-input">
+                            <label style="display: block; font-weight: 700; margin-bottom: 8px;">CURP *</label>
+                            <input type="text" id="curp" placeholder="18 caracteres" maxlength="18" style="width: 100%; padding: 12px; border: 1.5px solid #edf2f7; border-radius: 12px;" required>
+                        </div>
+                    </div>
+
+                    <div class="fila-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div class="grupo-input">
+                            <label style="display: block; font-weight: 700; margin-bottom: 8px;">Correo Electrónico *</label>
+                            <input type="email" id="correo" placeholder="correo@ejemplo.com" style="width: 100%; padding: 12px; border: 1.5px solid #edf2f7; border-radius: 12px;" required>
+                        </div>
+                        <div class="grupo-input">
+                            <label style="display: block; font-weight: 700; margin-bottom: 8px;">Teléfono *</label>
+                            <input type="tel" id="telefono" placeholder="443-123-4567" style="width: 100%; padding: 12px; border: 1.5px solid #edf2f7; border-radius: 12px;" required>
+                        </div>
+                    </div>
+
+                    <div class="fila-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div class="grupo-input">
+                            <label style="display: block; font-weight: 700; margin-bottom: 8px;">Fecha de Nacimiento *</label>
+                            <input type="date" id="fechaNacimiento" style="width: 100%; padding: 12px; border: 1.5px solid #edf2f7; border-radius: 12px;" required>
+                        </div>
+                        <div class="grupo-input">
+                            <label style="display: block; font-weight: 700; margin-bottom: 8px;">Sexo *</label>
+                            <select id="sexo" style="width: 100%; padding: 12px; border: 1.5px solid #edf2f7; border-radius: 12px;" required>
+                                <option value="Hombre">Hombre</option>
+                                <option value="Mujer">Mujer</option>
+                                <option value="No especificar">No especificar</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grupo-input" style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 700; margin-bottom: 8px;">Dirección *</label>
+                        <input type="text" id="direccion" placeholder="Calle, número, colonia, ciudad" style="width: 100%; padding: 12px; border: 1.5px solid #edf2f7; border-radius: 12px;" required>
+                    </div>
+                </div>
+
+                <div class="seccion-formulario" style="margin-bottom: 30px;">
+                    <h3 style="color: #00b4ff; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px;">Datos Laborales</h3>
+                    
+                    <div class="fila-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div class="grupo-input">
+                            <label style="display: block; font-weight: 700; margin-bottom: 8px;">Rol en la Empresa *</label>
+                            <select id="rol" style="width: 100%; padding: 12px; border: 1.5px solid #edf2f7; border-radius: 12px;" required>
+                                <option value="instructor">Instructor</option>
+                                <option value="recepcionista">Recepcionista</option>
+                                <option value="coordinador">Coordinador</option>
+                                <option value="administrador">Administrador</option>
+                            </select>
+                        </div>
+                        <div class="grupo-input">
+                            <label style="display: block; font-weight: 700; margin-bottom: 8px;">Fecha de Alta *</label>
+                            <input type="date" id="fechaAlta" style="width: 100%; padding: 12px; border: 1.5px solid #edf2f7; border-radius: 12px;" required>
+                        </div>
+                    </div>
+
+                    <div class="grupo-input">
+                        <label style="display: block; font-weight: 700; margin-bottom: 8px;">Contraseña Temporal *</label>
+                        <input type="password" id="contrasena" placeholder="Asigne una contraseña" style="width: 100%; padding: 12px; border: 1.5px solid #edf2f7; border-radius: 12px;" required>
+                    </div>
+                </div>
+
+                <div class="caja-info" style="background: #f8fafd; padding: 20px; border-radius: 15px; margin-bottom: 30px; font-size: 13px; color: #718096; border-left: 4px solid #00b4ff;">
+                    El estado del usuario se asignará como "Activo" automáticamente al confirmar el registro. Los campos marcados con (*) son obligatorios.
+                </div>
+
+                <div class="acciones-formulario" style="display: flex; justify-content: flex-end; gap: 20px; align-items: center;">
+                    <button type="button" class="btn-cancelar" onclick="window.location.href='index.html'" style="background: none; border: none; color: #a0aec0; font-weight: 700; cursor: pointer;">Cancelar</button>
+                    <button type="submit" class="btn-registrar" style="background: #0f2a44; color: white; padding: 15px 30px; border-radius: 50px; border: none; font-weight: 700; cursor: pointer;">Registrar Usuario</button>
+                </div>
+
+            </form>
         </div>
-
-        <form id="registro-form">
-            
-            <div class="seccion-formulario">
-                <h3>Información Personal</h3>
-                
-                <div class="fila-grid">
-                    <div class="grupo-input">
-                        <label for="nombreCompleto">Nombre Completo *</label>
-                        <input type="text" id="nombreCompleto" name="nombreCompleto" placeholder="Nombre completo" required>
-                    </div>
-                    <div class="grupo-input">
-                        <label for="curp">CURP *</label>
-                        <input type="text" id="curp" name="curp" placeholder="18 caracteres" maxlength="18" required>
-                    </div>
-                </div>
-
-                <div class="fila-grid">
-                    <div class="grupo-input">
-                        <label for="correo">Correo Electrónico *</label>
-                        <input type="email" id="correo" name="correo" placeholder="correo@ejemplo.com" required>
-                    </div>
-                    <div class="grupo-input">
-                        <label for="telefono">Teléfono *</label>
-                        <input type="tel" id="telefono" name="telefono" placeholder="55-1234-5678" required>
-                    </div>
-                </div>
-
-                <div class="fila-grid">
-                    <div class="grupo-input">
-                        <label for="fechaNacimiento">Fecha de Nacimiento *</label>
-                        <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
-                    </div>
-                    <div class="grupo-input">
-                        <label for="sexo">Sexo *</label>
-                        <select id="sexo" name="sexo" required>
-                            <option value="Hombre">Hombre</option>
-                            <option value="Mujer">Mujer</option>
-                            <option value="No especificar">No especificar</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="grupo-input ancho-completo">
-                    <label for="direccion">Dirección *</label>
-                    <input type="text" id="direccion" name="direccion" placeholder="Calle, número, colonia, ciudad" required>
-                </div>
-            </div>
-
-            <div class="seccion-formulario">
-                <h3>Datos Laborales</h3>
-                
-                <div class="fila-grid">
-                    <div class="grupo-input">
-                        <label for="rol">Rol en la Empresa *</label>
-                        <select id="rol" name="rolDentroDeLaEmpresa" required>
-                            <option value="instructor">Instructor</option>
-                            <option value="Recepcionista">Recepcionista</option>
-                            <option value="coordinador">Coordinador</option>
-                            <option value="administrador">Administrador</option>
-                            <option value="otro">Otro tipo</option>
-                        </select>
-                    </div>
-                    <div class="grupo-input">
-                        <label for="fechaAlta">Fecha de Alta *</label>
-                        <input type="date" id="fechaAlta" name="fechaAlta" required>
-                    </div>
-                </div>
-
-                <div class="grupo-input ancho-completo">
-                    <label for="contrasena">Contraseña Temporal *</label>
-                    <input type="password" id="contrasena" name="contrasena" placeholder="Asigne una contraseña" required>
-                </div>
-            </div>
-
-            <div class="caja-info">
-                El estado del usuario se asignará como "Activo" automáticamente al confirmar el registro. Los campos marcados con (*) son obligatorios.
-            </div>
-
-            <div class="acciones-formulario">
-                <button type="button" class="btn-cancelar" onclick="window.location.href='../../.env/index.html'">Cancelar</button>
-                <button type="submit" class="btn-registrar">Registrar Usuario</button>
-            </div>
-
-        </form>
-    </div>
+    </main>
 
     <script>
         lucide.createIcons();
 
-        // CONEXIÓN A TU PÁGINA (MODIFICAR SOCIO)
         document.getElementById('registro-form').addEventListener('submit', function(e) {
-            e.preventDefault(); // Evitamos el error de "archivo no encontrado"
-            
+            e.preventDefault(); 
             const nombre = document.getElementById('nombreCompleto').value;
             
-            // Preguntamos al usuario si quiere ir a editar el perfil recién creado
-            if(confirm(`¡Usuario ${nombre} registrado!\n\n¿Deseas ir a la pantalla de edición para verificar los datos?`)) {
-                // AQUÍ ESTÁ LA CONEXIÓN: Nos manda a tu página
+            if(confirm(`¡Usuario ${nombre} registrado exitosamente!\n\n¿Deseas ir a la pantalla de edición para verificar los datos?`)) {
+                // Vecino de carpeta
                 window.location.href = 'modificar_socio.html';
             } else {
-                window.location.href = '../../.env/index.html';
+                // Vecino de carpeta
+                window.location.href = 'index.html';
             }
         });
     </script>
-
 </body>
 </html>
