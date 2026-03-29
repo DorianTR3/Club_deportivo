@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 // Importacion relativa ajustada: el archivo esta en la misma carpeta controllers
 const { validarSocio } = require('./validacionSocios'); 
-
-const rutaSocios = path.join(__dirname, '../data/socios.json');
+const { validarCURP } = require('../utils/validacionCurp'); //agregada para validar CURP
+const rutaSocios = path.join(__dirname, '../../data/socios.json');
 
 const crearSocio = (req, res) => {
     // Mapeo de los nombres de los inputs del HTML a las variables del validador

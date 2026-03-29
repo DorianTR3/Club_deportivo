@@ -25,16 +25,21 @@ formularioSocio.addEventListener('submit', async (evento) => {
         const resultado = await respuesta.json();
 
 if (resultado.exito) {
-            // Solo inyectamos el texto y le decimos que se muestre
-            alertaExito.textContent = `Socio registrado correctamente. Número asignado: ${resultado.numero_socio}`;
+            // 1. Extraemos el numero de socio desestructurando, tal como pide el ticket
+            const { numero_socio } = resultado;
+            
+            // 2. Usamos la variable extraida para el mensaje exacto
+            alertaExito.textContent = `Socio registrado correctamente. Número asignado: ${numero_socio}`;
             alertaExito.style.display = 'block';
-
-            // Ya no necesitamos poner colores aquí, porque de eso se encarga tu CSS
-
+            
+            // Hacemos que la página suba suavemente para ver la alerta
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // 3. Temporizador de 3 segundos para limpiar todo
             setTimeout(() => {
                 alertaExito.style.display = 'none';
                 formularioSocio.reset();
-            }, 3000);
+            }, 5000);
         } else {
             // Notificacion de errores de validacion rechazados por el backend
             alert("Error al registrar socio: " + resultado.mensajes.join(', '));

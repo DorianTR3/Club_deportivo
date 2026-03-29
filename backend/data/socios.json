@@ -94,5 +94,47 @@
     "fechaAlta": "2026-03-20",
     "numero_socio": "SOC-0007",
     "estado": "Activo"
+  },
+  {
+    "nombreCompleto": "Fernando villafuerte",
+    "curp": "VIFF040717HMNLRRA2",
+    "tipoSocio": "accionista",
+    "modalidadFamiliar": false,
+    "fechaNacimiento": "2004-07-17",
+    "sexo": "Hombre",
+    "direccion": "fasfa",
+    "telefono": "4511014638",
+    "correo": "holahola@gmail.com",
+    "fechaAlta": "2026-03-27",
+    "numero_socio": "SOC-0008",
+    "estado": "Activo"
+  },
+  {
+    "nombreCompleto": "Fernando villafuerte",
+    "curp": "VIFF040717HMNLRRA2",
+    "tipoSocio": "accionista",
+    "modalidadFamiliar": false,
+    "fechaNacimiento": "2000-07-17",
+    "sexo": "Hombre",
+    "direccion": "sdfsgs",
+    "telefono": "4511014638",
+    "correo": "holahola@gmail.com",
+    "fechaAlta": "2026-03-27",
+    "numero_socio": "SOC-0009",
+    "estado": "Activo"
+  },
+  {
+    "nombreCompleto": "Fernando villafuerte",
+    "curp": "VIFF040717HMNLRRA2",
+    "tipoSocio": "accionista",
+    "modalidadFamiliar": false,
+    "fechaNacimiento": "2000-01-11",
+    "sexo": "Hombre",
+    "direccion": "dasda",
+    "telefono": "4511014638",
+    "correo": "holahola@gmail.com",
+    "fechaAlta": "2026-03-27",
+    "numero_socio": "SOC-0010",
+    "estado": "Activo"
   }
 ]

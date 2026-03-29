@@ -21,3 +21,4 @@ function validarCURP(curp) {
 
     return { valido: true };
 }
+module.exports = { validarCURP };
