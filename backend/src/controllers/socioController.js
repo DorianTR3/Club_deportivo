@@ -1,61 +1,132 @@
-const fs = require('fs');
-const path = require('path');
-// Importacion relativa ajustada: el archivo esta en la misma carpeta controllers
-const { validarSocio } = require('./validacionSocios'); 
-const { validarCURP } = require('../utils/validacionCurp'); //agregada para validar CURP
-const rutaSocios = path.join(__dirname, '../../data/socios.json');
+const pool = require('../config/database');
+const { validarSocio } = require('./validacionSocios');
+const { validarCURP } = require('../utils/validacionCurp');
 
-const crearSocio = (req, res) => {
-    // Mapeo de los nombres de los inputs del HTML a las variables del validador
-    const datosMapeados = {
-        nombreCompleto: `${req.body.nombre || ''} ${req.body.apellido || ''}`.trim(),
+const crearSocio = async (req, res) => {
+    const datos = {
+        nombre: req.body.nombre,
+        apellido: req.body.apellido,
         curp: req.body.curp,
-        tipoSocio: req.body.tipo_socio,
-        modalidadFamiliar: req.body.modalidad === 'familiar', 
-        fechaNacimiento: req.body.fecha_nacimiento,
-        sexo: req.body.genero,
-        direccion: req.body.direccion,
-        telefono: req.body.telefono,
-        correo: req.body.email_contacto,
-        fechaAlta: new Date().toISOString().split('T')[0] 
+        tipo_socio: req.body.tipo_socio,
+        modalidad: req.body.modalidad
     };
 
-    const validacion = validarSocio(datosMapeados);
+    const validacion = validarSocio(datos);
 
     if (!validacion.valido) {
-        return res.status(400).json({
-            exito: false,
-            mensajes: validacion.errores
-        });
+        return res.status(400).json({ errores: validacion.errores });
     }
 
+    if (!validarCURP(datos.curp)) {
+        return res.status(400).json({ error: "CURP inválida" });
+    }
+
+    const client = await pool.connect();
+
     try {
-        const data = fs.readFileSync(rutaSocios, 'utf-8');
-        let socios = JSON.parse(data);
+        await client.query('BEGIN');
 
-        // Generacion secuencial del identificador de socio
-        const totalSocios = socios.length + 1;
-        const numeroGenerado = "SOC-" + totalSocios.toString().padStart(4, '0');
+        // CURP única
+        const existe = await client.query(
+            "SELECT * FROM socios WHERE curp = $1",
+            [datos.curp]
+        );
 
-        datosMapeados.numero_socio = numeroGenerado;
-        datosMapeados.estado = "Activo";
+        if (existe.rows.length > 0) {
+            return res.status(409).json({ error: "CURP ya registrada" });
+        }
 
-        socios.push(datosMapeados);
+        // número socio
+        const count = await client.query(
+            "SELECT COUNT(*) FROM socios WHERE tipo_socio = $1",
+            [datos.tipo_socio]
+        );
 
-        fs.writeFileSync(rutaSocios, JSON.stringify(socios, null, 2));
+        const total = parseInt(count.rows[0].count) + 1;
+        const prefijo = datos.tipo_socio === 'accionista' ? 'ACC' : 'RNT';
+        const numero_socio = `${prefijo}-${String(total).padStart(3, '0')}`;
 
-        return res.status(201).json({
-            exito: true,
-            mensaje: "Registro guardado en JSON",
-            numero_socio: numeroGenerado
+        const insert = await client.query(
+            `INSERT INTO socios (nombre, apellido, curp, tipo_socio, modalidad, numero_socio)
+             VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`,
+            [datos.nombre, datos.apellido, datos.curp, datos.tipo_socio, datos.modalidad, numero_socio]
+        );
+
+        await client.query(
+            `INSERT INTO audit_logs (usuario_id, entidad, entidad_id, tipo_evento)
+             VALUES ($1,'socios',$2,'CREATE_SOCIO')`,
+            [req.user.usuario_id, insert.rows[0].id]
+        );
+
+        await client.query('COMMIT');
+
+        res.status(201).json({
+            socio_id: insert.rows[0].id,
+            numero_socio
         });
-    } catch (error) {
-        console.error("Error de escritura de archivo:", error);
-        return res.status(500).json({
-            exito: false,
-            mensajes: ["Fallo interno del servidor de archivos"]
-        });
+
+    } catch (err) {
+        await client.query('ROLLBACK');
+        res.status(500).json({ error: "Error interno" });
+    } finally {
+        client.release();
+    }
+};
+const editarSocio = async (req, res) => {
+    const client = await pool.connect();
+    const { id } = req.params;
+
+    try {
+        const result = await client.query("SELECT * FROM socios WHERE id=$1", [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Socio no encontrado" });
+        }
+
+        const actual = result.rows[0];
+        const nuevos = req.body;
+
+        let cambios = [];
+        let valores = [];
+        let i = 1;
+
+        for (let key in nuevos) {
+            if (nuevos[key] !== actual[key]) {
+                cambios.push(`${key}=$${i}`);
+                valores.push(nuevos[key]);
+                i++;
+            }
+        }
+
+        if (cambios.length === 0) {
+            return res.json({ mensaje: "Sin cambios" });
+        }
+
+        valores.push(id);
+
+        await client.query('BEGIN');
+
+        await client.query(
+            `UPDATE socios SET ${cambios.join(',')} WHERE id=$${i}`,
+            valores
+        );
+
+        await client.query(
+            `INSERT INTO audit_logs (usuario_id, entidad, entidad_id, tipo_evento)
+             VALUES ($1,'socios',$2,'UPDATE_SOCIO')`,
+            [req.user.usuario_id, id]
+        );
+
+        await client.query('COMMIT');
+
+        res.json({ mensaje: "Actualizado" });
+
+    } catch {
+        await client.query('ROLLBACK');
+        res.status(500).json({ error: "Error" });
+    } finally {
+        client.release();
     }
 };
 
-module.exports = { crearSocio };
+module.exports = { crearSocio, editarSocio };
