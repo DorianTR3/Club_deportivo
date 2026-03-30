@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const socioController = require('../controllers/socioController');
+const { crearSocio, editarSocio } = require('../controllers/socioController');
+const { verifyToken } = require('../middleware/auth.middleware');
 
-// Esta es la ruta POST que tu frontend (alta_socio.js) está buscando
-router.post('/', socioController.crearSocio);
+router.post('/', verifyToken, crearSocio);
+router.put('/:id', verifyToken, editarSocio);
 
 module.exports = router;
