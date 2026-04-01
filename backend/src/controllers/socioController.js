@@ -52,21 +52,26 @@ const crearSocio = async (req, res) => {
             [datos.nombre, datos.apellido, datos.curp, datos.tipo_socio, datos.modalidad, numero_socio]
         );
 
-        await client.query(
-            `INSERT INTO audit_logs (usuario_id, entidad, entidad_id, tipo_evento)
-             VALUES ($1,'socios',$2,'CREATE_SOCIO')`,
-            [req.user.usuario_id, insert.rows[0].id]
-        );
+// Blindaje: Solo intenta guardar en el historial si detecta un usuario
+        if (req.user && req.user.usuario_id) {
+            await client.query(
+                `INSERT INTO audit_logs (usuario_id, entidad, entidad_id, tipo_evento)
+                 VALUES ($1,'socios',$2,'CREATE_SOCIO')`,
+                [req.user.usuario_id, insert.rows[0].id]
+            );
+        }
 
         await client.query('COMMIT');
 
         res.status(201).json({
+            exito: true,
             socio_id: insert.rows[0].id,
             numero_socio
         });
 
     } catch (err) {
         await client.query('ROLLBACK');
+        console.log("CHISME DE LA BASE DE DATOS:", err); // <-- Agrega esta línea
         res.status(500).json({ error: "Error interno" });
     } finally {
         client.release();
