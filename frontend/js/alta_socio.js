@@ -45,10 +45,17 @@ formularioSocio.addEventListener('submit', async (evento) => {
             }, 5000);
 
         } else {
-            alert("Error al registrar socio: " + resultado.mensajes.join(', '));
+            // Manejamos el error si el backend manda 'errores' (arreglo) o 'error' (texto)
+            let textoError = "Ocurrió un error al registrar";
+            if (resultado.errores) {
+                textoError = resultado.errores.join(', ');
+            } else if (resultado.error) {
+                textoError = resultado.error;
+            }
+            alert("Error al registrar socio: " + textoError);
         }
-
-    } catch (error) {
+    } // <--- ¡ESTA ES LA LLAVE CLAVE QUE TE FALTABA PARA CERRAR EL TRY!
+    catch (error) {
         console.error("Error de conexion:", error);
         alert("Asegurate de que el servidor Node.js este encendido.");
     }
