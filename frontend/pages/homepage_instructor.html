@@ -31,8 +31,7 @@
 
         <div class="header-utils">
             <i data-lucide="bell"></i>
-            <i data-lucide="log-out" style="color: #ef4444;"></i>
-        </div>
+            <i id="btn-logout" data-lucide="log-out" style="color: #ef4444; cursor: pointer;"></i>        </div>
     </header>
 
     <main class="main-agenda-container">
@@ -90,6 +89,11 @@
     </main>
 
     <script>
+        // Si no hay token, se regresa al login
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/login.html';
+        }
+
         // Iniciar Iconos
         lucide.createIcons();
 
@@ -97,8 +101,8 @@
         
         // Variable Objeto: Datos del instructor para poblar la UI
         const sesionInstructor = {
-            nombre: "Prof. Alejandro Ruiz",
-            especialidad: "Coordinador de Deportes de Raqueta"
+            nombre: "NOMBRE INSTRUCTOR FALTA PONER",
+            especialidad: "ESPECIALIDAD FALTA PONER"
         };
 
         // Variable Formato: Configuración regional de fecha
@@ -117,6 +121,19 @@
          */
         function verLista(nombreClase) {
             alert(`Accediendo a la lista de participantes de: ${nombreClase}\n(Funcionalidad reservada para el Sprint 3)`);
+        }
+        // BOTON DE CERRAR SESIÓN
+        const btnLogout = document.getElementById('btn-logout');
+
+        if (btnLogout) {
+            btnLogout.addEventListener('click', () => {
+                // 1. Borramos los datos de la sesión del navegador
+                localStorage.removeItem('token');
+                localStorage.removeItem('usuario');
+                
+                // 2. Lo mandamos de regreso a la pantalla de login
+                window.location.href = '../pages/login.html'; 
+            });
         }
     </script>
 </body>
