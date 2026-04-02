@@ -69,93 +69,99 @@
     </main>
 
     <script>
+    lucide.createIcons();
+
+    // --- Lógica de visibilidad de contraseña ---
+    const passInput = document.getElementById('password');
+    const toggleBtn = document.getElementById('toggle-pass');
+    const eyeIcon = document.getElementById('eye-icon');
+
+    toggleBtn.addEventListener('click', () => {
+        const isPass = passInput.type === 'password';
+        passInput.type = isPass ? 'text' : 'password';
+        const newIcon = isPass ? 'eye-off' : 'eye';
+        eyeIcon.setAttribute('data-lucide', newIcon);
         lucide.createIcons();
+    });
 
-        const passInput = document.getElementById('password');
-        const toggleBtn = document.getElementById('toggle-pass');
-        const eyeIcon = document.getElementById('eye-icon');
+    // --- Protección de historial y auto-login ---
+    document.addEventListener('DOMContentLoaded', () => {
+        // Evitar que el usuario regrese al login con el botón "atrás" del navegador
+        history.pushState(null, '', location.href);
+        window.onpopstate = function () {
+            history.go(1);
+        };
 
-        toggleBtn.addEventListener('click', () => {
-            const isPass = passInput.type === 'password';
-            passInput.type = isPass ? 'text' : 'password';
-            const newIcon = isPass ? 'eye-off' : 'eye';
-            eyeIcon.setAttribute('data-lucide', newIcon);
-            lucide.createIcons();
-        });
-
-        // Proteger historial y redireccionar si ya hay sesión
-document.addEventListener('DOMContentLoaded', () => {
-    history.pushState(null, '', location.href);
-    window.onpopstate = function () {
-        history.go(1);
-    };
-
-    if (localStorage.getItem('token') && localStorage.getItem('usuario')) {
-        redirigirPorRol(JSON.parse(localStorage.getItem('usuario')).rol);
-    }
-});
-
-// Interceptar el formulario de login
-document.getElementById('form-login').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    // Tomamos los valores usando tus IDs exactos
-    const email = document.getElementById('user-email').value;
-    const contrasena = document.getElementById('password').value;
-    const errorDiv = document.querySelector('.error-msg');
-    
-    // Limpiar errores viejos
-    if (errorDiv) errorDiv.style.display = 'none';
-
-    try {
-        const respuesta = await fetch('http://localhost:3000/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, contrasena })
-        });
-
-        const data = await respuesta.json();
-
-        // Si el backend rechaza el acceso (401 o 403)
-        if (respuesta.status === 401 || respuesta.status === 403) {
-            if (errorDiv) {
-                errorDiv.textContent = data.error || "Credenciales inválidas";
-                errorDiv.style.display = 'block';
-            } else {
-                alert(data.error || "Credenciales inválidas");
-            }
-            return;
+        // Si ya existe una sesión activa, mandarlo directo a su dashboard
+        const usuarioSesion = localStorage.getItem('usuario');
+        if (localStorage.getItem('token') && usuarioSesion) {
+            redirigirPorRol(JSON.parse(usuarioSesion).rol);
         }
+    });
 
-        // Si el acceso es correcto (200)
-        if (respuesta.ok) {
+    // --- Interceptar formulario de Login ---
+    document.getElementById('form-login').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('user-email').value;
+        const contrasena = document.getElementById('password').value;
+        const errorDiv = document.querySelector('.error-msg');
+        
+        if (errorDiv) errorDiv.style.display = 'none';
+
+        try {
+            const respuesta = await fetch('http://localhost:3000/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, contrasena })
+            });
+
+            const data = await respuesta.json();
+
+            if (!respuesta.ok) {
+                if (errorDiv) {
+                    errorDiv.textContent = data.error || "Credenciales inválidas";
+                    errorDiv.style.display = 'block';
+                }
+                return;
+            }
+
+            // Guardar sesión y redirigir
             localStorage.setItem('token', data.token);
             localStorage.setItem('usuario', JSON.stringify(data.usuario));
             redirigirPorRol(data.usuario.rol);
+
+        } catch (error) {
+            console.error("Error de conexión:", error);
+            if (errorDiv) {
+                errorDiv.textContent = "Error al conectar con el servidor.";
+                errorDiv.style.display = 'block';
+            }
         }
-    } catch (error) {
-        console.error("Error de conexión:", error);
-        if (errorDiv) {
-            errorDiv.textContent = "Error al conectar con el servidor.";
-            errorDiv.style.display = 'block';
+    });
+
+    /**
+     * Función de redirección (SCRUM-76)
+     * Ajustada: login.html y homepages están en la misma carpeta (/pages)
+     */
+    function redirigirPorRol(rol) {
+        const rutasPorRol = {
+            'gerente': 'homepage_gerente.html',
+            'admin': 'homepage_admin.html',
+            'coordinador': 'homepage_coordinador.html',
+            'instructor': 'homepage_instructor.html',
+            'recepcion': 'homepage_recepcion.html',
+            'socio': 'homepage_socio.html'
+        };
+
+        // Si el rol existe en el mapa, redirige; si no, al index fuera de la carpeta
+        const destino = rutasPorRol[rol];
+        if (destino) {
+            window.location.href = destino;
+        } else {
+            window.location.href = '../index.html';
         }
     }
-});
-
-// Función para centralizar las rutas de destino 
-// 
-function redirigirPorRol(rol) {
-    const rutasPorRol = {
-        gerente: '../pages/homepage_gerente.html',
-        admin: '../pages/homepage_admin.html',
-        coordinador: '../pages/homepage_coordinador.html',
-        instructor: '../pages/homepage_instructor.html',
-        recepcion: '../pages/homepage_recepcion.html',
-        socio: '../pages/homepage_socio.html'
-    };
-    // Si el rol no está en la lista, lo mandamos al index por seguridad
-    window.location.href = rutasPorRol[rol] || '/index.html';
-}
-    </script>
+</script>
 </body>
 </html>

@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script src="../js/auth-guard.js"></script>
+    <script>
+        // Solo permite entrar si el rol es 'recepcion'
+        protegerPagina(['recepcion', 'admin', 'gerente']); // Recepcion, admin y Gerente pueden acceder
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recepción | Club Social y Deportivo</title>

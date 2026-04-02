@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    
+    <script src="../js/auth-guard.js"></script>
+    <script>
+        // Solo permite entrar si el rol es 'gerente'
+        protegerPagina(['gerente', 'admin']); // Gerente y Admin pueden acceder
+    </script>
+    
     <meta charset="UTF-8">
     <title>Dashboard Ejecutivo | Club Social y Deportivo</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
