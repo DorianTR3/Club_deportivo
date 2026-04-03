@@ -1,6 +1,8 @@
 const express = require('express');
+const cors = require('cors'); // INTEGRACIÓN DE CORS
 const app = express();
 
+app.use(cors()); // <-- 2. Lo activas
 app.use(express.json());
 
 // rutas

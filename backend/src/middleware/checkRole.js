@@ -3,8 +3,10 @@
  * Este middleware verifica si el usuario tiene el nivel/rol necesario para ejecutar la acción.
  * * Roles existentes en el sistema: 
  * - 'admin': Acceso total a todas las rutas del sistema.
- * - 'recepcionista': Acceso a crear/editar socios, registrar pagos, etc.
- * - 'entrenador': Acceso a crear rutinas y tomar asistencias.
+ * - 'gerente': Acceso a reportes, gestión de empleados, etc.
+ * - 'coordinador': Acceso a gestionar clases, horarios, etc.
+ * - 'instructor': Acceso a gestionar sus propias clases, ver asistencias, etc.
+ * - 'recepcion': Acceso a crear/editar socios, registrar pagos, etc.
  * - 'socio': Acceso exclusivo a su propia información (ver su perfil, clases, reservas).
  * * REGLA: Siempre debe ir DESPUÉS de verifyToken.
  * * Ejemplos de uso: 
