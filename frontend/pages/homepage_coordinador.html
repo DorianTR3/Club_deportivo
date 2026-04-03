@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script src="../js/auth-guard.js"></script>
+    <script>
+        // Solo permite entrar si el rol es 'coordinador'
+        protegerPagina(['coordinador', 'admin', 'gerente']); // Coordinador, admin y Gerente pueden acceder
+    </script>
     <meta charset="UTF-8">
     <title>Disciplinas e Instructores | ERS 4.6.19</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
