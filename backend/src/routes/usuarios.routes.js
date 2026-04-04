@@ -13,7 +13,7 @@ const { verifyToken, checkRole } = require('../middleware/auth.middleware');
 
 // Blindaje global: Todo lo que esté debajo de estas líneas exige token y rol admin
 router.use(verifyToken);
-router.use(checkRole(['admin']));
+router.use(checkRole(['admin', 'gerente'])); // Solo admin e gerente pueden gestionar usuarios internos
 
 // Tus rutas limpias y protegidas
 router.post('/', crearUsuario);
