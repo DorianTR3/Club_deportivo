@@ -3,48 +3,56 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 exports.login = async (req, res) => {
-  // Tu frontend manda 'email', pero lo vamos a buscar en la columna 'username'
-  const { email, contrasena } = req.body;
+    const { email, contrasena } = req.body;
+    
+    console.log(`\n--- INTENTO DE LOGIN ---`);
+    console.log(`Buscando el correo: '${email}'`);
 
-  if (!email || !contrasena) {
-    return res.status(400).json({ error: "Usuario y contraseña requeridos" });
-  }
+    try {
+        const result = await pool.query(
+            `SELECT u.usuario_id, u.username, u.password_hash, u.activo, r.nombre AS rol
+             FROM usuarios u
+             JOIN roles r ON u.rol_id = r.rol_id
+             WHERE u.username = $1`,
+            [email]
+        );
 
-  try {
-    // Ajustado a tus nombres de columnas (username, rol_id, usuario_id)
-    const result = await pool.query(
-      `SELECT u.*, r.nombre AS rol
-       FROM usuarios u
-       JOIN roles r ON u.rol_id = r.rol_id
-       WHERE u.username = $1`,
-      [email]
-    );
+        console.log(`Usuarios encontrados en la BD: ${result.rows.length}`);
 
-    const user = result.rows[0];
+        if (result.rows.length === 0) {
+            console.log("Falla: No se encontró el correo (o el rol_id está nulo y el JOIN lo ocultó)");
+            return res.status(401).json({ error: 'Credenciales inválidas' });
+        }
 
-    if (!user) return res.status(401).json({ error: "Credenciales incorrectas" });
-    if (!user.activo) return res.status(403).json({ error: "Cuenta desactivada" });
+        const usuarioBD = result.rows[0];
+        console.log(`Usuario extraído:`, { id: usuarioBD.usuario_id, email: usuarioBD.username, rol: usuarioBD.rol });
 
-    // Ajustado para leer 'password_hash'
-    const match = await bcrypt.compare(contrasena, user.password_hash);
+        const passwordValida = await bcrypt.compare(contrasena, usuarioBD.password_hash);
+        console.log(`¿La contraseña coincide?: ${passwordValida}`);
 
-    if (!match) return res.status(401).json({ error: "Credenciales incorrectas" });
+        if (!passwordValida) {
+            return res.status(401).json({ error: 'Credenciales inválidas' });
+        }
 
-    // Ajustado para usar usuario_id y username
-    const token = jwt.sign(
-      {
-        usuario_id: user.usuario_id,
-        rol: user.rol,
-        username: user.username
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: '8h' }
-    );
+        if (!usuarioBD.activo) {
+            console.log("Falla: El usuario está inactivo");
+            return res.status(403).json({ error: 'La cuenta está desactivada' });
+        }
 
-    res.json({ token, usuario: { username: user.username, rol: user.rol } });
+        const token = jwt.sign(
+            { usuario_id: usuarioBD.usuario_id, email: usuarioBD.username, rol: usuarioBD.rol },
+            process.env.JWT_SECRET || 'secreto_super_seguro', 
+            { expiresIn: '8h' }
+        );
 
-  } catch (error) {
-    console.error("💥 ERROR EN EL LOGIN:", error);
-    res.status(500).json({ error: "Error en el servidor" });
-  }
+        console.log("¡Login Exitoso!");
+        res.json({
+            token,
+            usuario: { id: usuarioBD.usuario_id, email: usuarioBD.username, rol: usuarioBD.rol }
+        });
+
+    } catch (error) {
+        console.error("ERROR EN EL LOGIN:", error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
 };

@@ -1,38 +1,79 @@
 const pool = require('../config/database');
 const bcrypt = require('bcrypt');
 
-exports.crearUsuario = async (req, res) => {
-  try {
-    const { email, nombre, rol_id, contrasena } = req.body;
+const crearUsuario = async (req, res) => {
+        const { 
+            email, nombres, apellido_paterno, apellido_materno, curp, 
+            telefono, fecha_nacimiento, genero, direccion, 
+            contrasena, rol_id, especialidad 
+        } = req.body;
+    
+    const client = await pool.connect(); 
 
-    // Se busca en la columna username usando el email que manda el frontend
-    const existe = await pool.query(
-      "SELECT usuario_id FROM usuarios WHERE username=$1",
-      [email]
-    );
+    try {
+        await client.query('BEGIN'); 
 
-    if (existe.rows.length > 0) {
-      return res.status(409).json({ error: "El email ya está registrado" });
+        const rolResult = await client.query('SELECT nombre FROM roles WHERE rol_id = $1', [rol_id]);
+        const nombreRol = rolResult.rows[0]?.nombre;
+
+        const salt = await bcrypt.genSalt(10);
+        const password_hash = await bcrypt.hash(contrasena, salt);
+
+        const userResult = await client.query(
+            `INSERT INTO usuarios (
+                username, nombres, apellido_paterno, apellido_materno, curp, 
+                telefono, fecha_nacimiento, genero, direccion, password_hash, rol_id, activo
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, true) RETURNING usuario_id`,
+            [email, nombres, apellido_paterno, apellido_materno, curp, telefono, fecha_nacimiento, genero, direccion, password_hash, rol_id]
+        );
+
+        const nuevoUsuarioId = userResult.rows[0].usuario_id;
+
+        // segundo cambio: insertamos la especialidad si biene si no la dejamos nula
+        if (nombreRol === 'instructor') {
+            // iserto solo id y espsialidad por q el nomre ya qdo en la tabla d ariva
+            await client.query(
+                `INSERT INTO instructores (usuario_id, especialidad) VALUES ($1, $2)`,
+                [nuevoUsuarioId, especialidad || null]
+            );
+        
+        }
+        // --- INICIO DE REGISTRO EN BITÁCORA (LOGS) ---
+        
+        // 1. Capturamos la IP desde donde se hace la petición
+        const ip_origen = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
+        // 2. Armamos el JSON con los detalles de lo que se hizo
+        const detallesLog = JSON.stringify({
+            nuevo_usuario_email: email,
+            rol_asignado: rol_id,
+            curp_registrada: curp
+        });
+        const adminId = req.usuario?.usuario_id || req.user?.usuario_id || req.usuario?.id || req.user?.id;
+        // 3. Insertamos el movimiento en la tabla de logs_sistema
+        // Nota: req.usuario.usuario_id viene de tu auth.middleware.js gracias al token
+        await client.query(
+            `INSERT INTO logs_sistema (usuario_id, accion, tabla_afectada, detalles, ip_origen)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [adminId, 'CREAR_USUARIO_INTERNO', 'usuarios', detallesLog, ip_origen]
+        );
+        
+        // --- FIN DE REGISTRO EN BITÁCORA ---
+
+        await client.query('COMMIT'); // Aquí ya guardas todo: el usuario, el instructor (si aplica) y el log
+        res.status(201).json({ mensaje: 'Usuario registrado exitosamente' });
+
+    } catch (error) {
+        await client.query('ROLLBACK'); 
+        console.error("Error al crear usuario:", error);
+        
+        if (error.code === '23505') {
+            return res.status(409).json({ error: 'El correo o la CURP ya están registrados' });      
+          }
+        res.status(500).json({ error: 'Error interno del servidor' });
+    } finally {
+        client.release(); 
     }
-
-    const hash = await bcrypt.hash(contrasena, 10);
-
-    // Se inserta en las columnas correctas de Neon y se retorna usuario_id
-    const result = await pool.query(
-      `INSERT INTO usuarios (username, nombre, rol_id, password_hash)
-       VALUES ($1, $2, $3, $4) RETURNING usuario_id`,
-      [email, nombre, rol_id, hash]
-    );
-
-    res.status(201).json({
-      usuario_id: result.rows[0].usuario_id,
-      email,
-      nombre
-    });
-  } catch (error) {
-    console.error("Error al crear usuario:", error);
-    res.status(500).json({ error: "Error interno del servidor" });
-  }
 };
 
 // GET /api/usuarios-internos
@@ -163,7 +204,8 @@ const cambiarEstadoUsuario = async (req, res) => {
 };
 
 module.exports = {
+    crearUsuario,
     listarUsuarios,
     actualizarUsuario,
-    cambiarEstadoUsuario,
+    cambiarEstadoUsuario
 };

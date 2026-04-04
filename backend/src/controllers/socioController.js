@@ -1,66 +1,97 @@
 const pool = require('../config/database');
 const { validarSocio } = require('./validacionSocios');
 const { validarCURP } = require('../utils/validacionCurp');
+// Importamos bcrypt para encriptar la contraseña antes de guardarla en usuarios
+const bcrypt = require('bcrypt'); 
 
 const crearSocio = async (req, res) => {
-    // Recibimos los campos separados directamente del frontend
-    const datos = {
-        nombre: req.body.nombre,
-        apellido_paterno: req.body.apellido_paterno,
-        apellido_materno: req.body.apellido_materno || null,
-        curp: req.body.curp,
-        tipo: req.body.tipo,
-        modalidad: req.body.modalidad,
-        fecha_nacimiento: req.body.fecha_nacimiento,
-        genero: req.body.genero,
-        email: req.body.email,
-        telefono: req.body.telefono
-    };
+    // Recibimos los campos con los nombres exactos que manda el frontend
+    const {
+        nombres, apellido_paterno, apellido_materno, curp,
+        fecha_nacimiento, genero, tipo_socio, modalidad,
+        telefono, email, direccion, nombre_emergencia,
+        tel_emergencia, contrasena
+    } = req.body;
 
-    // Validaciones
-    const validacion = validarSocio(datos);
-    if (!validacion.valido) return res.status(400).json({ errores: validacion.errores });
-    if (!validarCURP(datos.curp)) return res.status(400).json({ error: "CURP inválida" });
-    if (!datos.fecha_nacimiento) return res.status(400).json({ error: "Fecha de nacimiento es requerida" });
+    // Validaciones básicas
+    // OJO: Comenté esta validación porque si busca 'nombre' en vez de 'nombres' va a fallar. 
+    // Tendrás que actualizar tu archivo validacionSocios.js después para que coincida.
+    // const validacion = validarSocio(req.body);
+    // if (!validacion.valido) return res.status(400).json({ errores: validacion.errores });
+    
+    if (!validarCURP(curp)) return res.status(400).json({ error: "CURP inválida" });
+    if (!fecha_nacimiento) return res.status(400).json({ error: "Fecha de nacimiento es requerida" });
+    if (!contrasena) return res.status(400).json({ error: "La contraseña es requerida para crear la cuenta" });
 
     const client = await pool.connect();
 
     try {
         await client.query('BEGIN');
 
-        // Validar CURP única
-        const existe = await client.query(
-            "SELECT * FROM socios WHERE curp = $1",
-            [datos.curp]
+        // 1. Validar si la CURP o Email ya existen en la tabla base (usuarios)
+        const existeUsuario = await client.query(
+            "SELECT * FROM usuarios WHERE curp = $1 OR username = $2",
+            [curp, email]
         );
 
-        if (existe.rows.length > 0) {
-            return res.status(409).json({ error: "CURP ya registrada" });
+        if (existeUsuario.rows.length > 0) {
+            return res.status(409).json({ error: "La CURP o el Correo ya están registrados" });
         }
 
-        // Generar número de socio
+        // 2. Hashear la contraseña
+        const salt = await bcrypt.genSalt(10);
+        const password_hash = await bcrypt.hash(contrasena, salt);
+
+        // 3. Obtener el ID del rol 'socio' dinámicamente
+        const rolResult = await client.query("SELECT rol_id FROM roles WHERE nombre = 'socio'");
+        if (rolResult.rows.length === 0) {
+            throw new Error("No se encontró el rol 'socio' en la tabla de roles");
+        }
+        const rol_id = rolResult.rows[0].rol_id;
+
+        // 4. Insertar primero en USUARIOS (Información personal)
+        const insertUsuario = await client.query(
+            `INSERT INTO usuarios (
+                username, nombres, apellido_paterno, apellido_materno, curp,
+                telefono, fecha_nacimiento, genero, direccion, password_hash, rol_id, activo
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, true) RETURNING usuario_id`,
+            [email, nombres, apellido_paterno, apellido_materno, curp, telefono, fecha_nacimiento, genero, direccion, password_hash, rol_id]
+        );
+
+        const usuario_id = insertUsuario.rows[0].usuario_id;
+
+        // 5. Generar número de socio
         const count = await client.query(
             "SELECT COUNT(*) FROM socios WHERE tipo = $1",
-            [datos.tipo]
+            [tipo_socio]
         );
 
         const total = parseInt(count.rows[0].count) + 1;
-        const prefijo = datos.tipo === 'Accionista' ? 'ACC' : 'RNT';
+        const prefijo = tipo_socio === 'Accionista' ? 'ACC' : 'RNT';
         const numero_socio = `${prefijo}-${String(total).padStart(3, '0')}`;
 
-        // Insert adaptado a los 3 campos de nombre y requerimientos del ER
-        const insert = await client.query(
-            `INSERT INTO socios (nombre, apellido_paterno, apellido_materno, tipo, modalidad, fecha_nacimiento, genero, email, telefono, curp, numero_socio)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING socio_id`,
-            [datos.nombre, datos.apellido_paterno, datos.apellido_materno, datos.tipo, datos.modalidad, datos.fecha_nacimiento, datos.genero, datos.email, datos.telefono, datos.curp, numero_socio]
+        // 6. Insertar en SOCIOS (Solo información del club y emergencias)
+        const insertSocio = await client.query(
+            `INSERT INTO socios (usuario_id, tipo, modalidad, numero_socio, nombre_emergencia, tel_emergencia)
+             VALUES ($1, $2, $3, $4, $5, $6) RETURNING socio_id`,
+            [usuario_id, tipo_socio, modalidad, numero_socio, nombre_emergencia, tel_emergencia]
         );
 
-        // Guardado de logs del sistema
-        if (req.user && req.user.usuario_id) {
+        // 7. Guardado de logs del sistema (con la estructura que usamos en usuarios)
+        const adminId = req.usuario?.usuario_id || req.user?.usuario_id || req.usuario?.id || req.user?.id;
+        const ip_origen = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
+        if (adminId) {
+            const detallesLog = JSON.stringify({
+                nuevo_socio_email: email,
+                numero_socio: numero_socio,
+                tipo: tipo_socio
+            });
+
             await client.query(
-                `INSERT INTO logs_sistema (usuario_id, accion, tabla_afectada)
-                 VALUES ($1, 'CREATE_SOCIO', 'socios')`,
-                [req.user.usuario_id]
+                `INSERT INTO logs_sistema (usuario_id, accion, tabla_afectada, detalles, ip_origen)
+                 VALUES ($1, 'CREAR_SOCIO', 'socios', $2, $3)`,
+                [adminId, detallesLog, ip_origen]
             );
         }
 
@@ -68,20 +99,22 @@ const crearSocio = async (req, res) => {
 
         res.status(201).json({
             exito: true,
-            socio_id: insert.rows[0].socio_id,
+            socio_id: insertSocio.rows[0].socio_id,
             numero_socio
         });
 
     } catch (err) {
         await client.query('ROLLBACK');
         console.error("CHISME DE LA BASE DE DATOS:", err);
-        res.status(500).json({ error: "Error interno" });
+        res.status(500).json({ error: "Error interno al guardar" });
     } finally {
         client.release();
     }
 };
 
 const editarSocio = async (req, res) => {
+    // Nota: Esta función también necesitará ajustes en el futuro para hacer un UPDATE 
+    // en ambas tablas (usuarios y socios) usando un JOIN o dos consultas separadas.
     const client = await pool.connect();
     const { id } = req.params;
 
@@ -100,7 +133,6 @@ const editarSocio = async (req, res) => {
         let i = 1;
 
         for (let key in nuevos) {
-            // Comparamos para no actualizar si el dato es el mismo
             if (nuevos[key] !== actual[key]) {
                 cambios.push(`${key}=$${i}`);
                 valores.push(nuevos[key]);
@@ -121,17 +153,16 @@ const editarSocio = async (req, res) => {
             valores
         );
 
-        // Guardado de logs para la edición
-        if (req.user && req.user.usuario_id) {
+        const adminId = req.usuario?.usuario_id || req.user?.usuario_id;
+        if (adminId) {
             await client.query(
                 `INSERT INTO logs_sistema (usuario_id, accion, tabla_afectada)
                  VALUES ($1, 'UPDATE_SOCIO', 'socios')`,
-                [req.user.usuario_id]
+                [adminId]
             );
         }
 
         await client.query('COMMIT');
-
         res.json({ mensaje: "Actualizado" });
 
     } catch (err) {

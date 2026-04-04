@@ -23,7 +23,8 @@ function protegerPagina(rolesPermitidos) {
                 'instructor': 'homepage_instructor.html',
                 'recepcion': 'homepage_recepcion.html',
                 'coordinador': 'homepage_coordinador.html',
-                'gerente': 'homepage_gerente.html' // Cambiado de 'admin' a 'gerente' según tu captura
+                'gerente': 'homepage_gerente.html', // Cambiado de 'admin' a 'gerente' según tu captura
+                'admin': 'homepage_gerente.html' 
             };
             
             window.location.href = rutas[rolUsuario] || 'login.html';
